@@ -1,0 +1,16 @@
+body {
+    background-color: #f8f9fa;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.statistics-table {
+    margin-top: 20px;
+}
+
+.chart-container {
+    margin-top: 30px;
+}
