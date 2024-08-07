@@ -1,10 +1,11 @@
 const redis = require("redis");
 
 const redisHost = process.env.REDIS_HOST || "localhost";
+const redisPort = process.env.REDIS_PORT || "6379";
 
 // Create a Redis client
 const redisClient = redis.createClient({
-    url: `redis://${redisHost}:6379`,
+    url: `redis://${redisHost}:${redisPort}`,
 });
 
 redisClient.connect().catch(console.error);

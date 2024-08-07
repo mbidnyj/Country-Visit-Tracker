@@ -23,8 +23,6 @@ The Country Visit Tracker is a web application that tracks the number of visits 
 -   [Frontend Interface](#frontend-interface)
 -   [Testing](#testing)
 -   [Performance Testing](#performance-testing)
--   [Deployment](#deployment)
--   [License](#license)
 
 ## **Getting Started**
 
