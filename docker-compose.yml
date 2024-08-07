@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    backend:
+        build:
+            context: ./www
+        ports:
+            - "3000:3000"
+        depends_on:
+            - redis
+        environment:
+            REDIS_HOST: redis
+        command: >
+            sh -c "
+            node seed.js &&
+            npm start
+            "
+
+    frontend:
+        build:
+            context: ./app
+        ports:
+            - "3001:3000"
+        depends_on:
+            - backend
+
+    redis:
+        image: "redis:alpine"
+        ports:
+            - "6379:6379"
