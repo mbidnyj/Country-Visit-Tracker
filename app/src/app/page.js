@@ -2,28 +2,25 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Chart from "chart.js/auto";
+import dynamic from "next/dynamic";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { countryCodeToName } from "./countryCodeToName";
+
+// Register the necessary components for Chart.js
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+// Dynamically import the ChoroplethMap component
+const ChoroplethMap = dynamic(() => import("./ChoroplethMap"), {
+    ssr: false,
+});
 
 export default function Home() {
     const [countryCode, setCountryCode] = useState("us");
     const [feedback, setFeedback] = useState("");
     const [statistics, setStatistics] = useState({});
-    const [chart, setChart] = useState(null);
 
-    const handleUpdateStatistics = async () => {
-        try {
-            const response = await axios.post("http://localhost:3000/update-statistics", {
-                countryCode,
-            });
-            setFeedback(`Statistics updated for ${countryCode.toUpperCase()}.`);
-
-            // Fetch updated statistics
-            fetchStatistics();
-        } catch (error) {
-            setFeedback("Error updating statistics.");
-        }
-    };
-
+    // Fetch statistics on component mount
     const fetchStatistics = async () => {
         try {
             const response = await axios.get("http://localhost:3000/statistics");
@@ -37,38 +34,34 @@ export default function Home() {
         fetchStatistics();
     }, []);
 
-    useEffect(() => {
-        if (Object.keys(statistics).length > 0) {
-            if (chart) {
-                chart.destroy();
-            }
-            const ctx = document.getElementById("visit-chart").getContext("2d");
-            setChart(
-                new Chart(ctx, {
-                    type: "bar",
-                    data: {
-                        labels: Object.keys(statistics),
-                        datasets: [
-                            {
-                                label: "Visit Count",
-                                data: Object.values(statistics),
-                                backgroundColor: "rgba(54, 162, 235, 0.2)",
-                                borderColor: "rgba(54, 162, 235, 1)",
-                                borderWidth: 1,
-                            },
-                        ],
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                            },
-                        },
-                    },
-                })
-            );
+    const handleUpdateStatistics = async () => {
+        try {
+            const response = await axios.post("http://localhost:3000/update-statistics", {
+                countryCode,
+            });
+            setFeedback(`Statistics updated for ${countryCode.toUpperCase()}.`);
+            fetchStatistics();
+        } catch (error) {
+            setFeedback("Error updating statistics.");
         }
-    }, [statistics]);
+    };
+
+    // Prepare data for the bar chart
+    const chartData = {
+        labels: Object.keys(statistics).map((code) => {
+            const countryName = countryCodeToName[code.toLowerCase()] || code.toUpperCase();
+            return countryName;
+        }),
+        datasets: [
+            {
+                label: "Visit Count",
+                data: Object.values(statistics),
+                backgroundColor: "rgba(54, 162, 235, 0.6)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+            },
+        ],
+    };
 
     return (
         <div className="container">
@@ -88,11 +81,14 @@ export default function Home() {
                             onChange={(e) => setCountryCode(e.target.value)}
                         >
                             <option value="us">United States</option>
+                            <option value="ua">Ukraine</option>
                             <option value="it">Italy</option>
                             <option value="fr">France</option>
                             <option value="de">Germany</option>
                             <option value="es">Spain</option>
-                            <option value="ua">Ukraine</option>
+                            <option value="ca">Canada</option>
+                            <option value="br">Brazil</option>
+                            <option value="au">Australia</option>
                         </select>
                     </div>
                     <button id="submit-button" className="btn btn-primary btn-block" onClick={handleUpdateStatistics}>
@@ -104,11 +100,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <div
-                id="statistics-section"
-                className="statistics-table"
-                style={{ display: Object.keys(statistics).length ? "block" : "none" }}
-            >
+            <div id="statistics-section" className="statistics-table mt-5">
                 <h3>Visit Statistics</h3>
                 <table className="table table-striped">
                     <thead>
@@ -120,7 +112,7 @@ export default function Home() {
                     <tbody id="statistics-table-body">
                         {Object.entries(statistics).map(([country, count]) => (
                             <tr key={country}>
-                                <td>{country}</td>
+                                <td>{country.toUpperCase()}</td>
                                 <td>{count}</td>
                             </tr>
                         ))}
@@ -128,13 +120,33 @@ export default function Home() {
                 </table>
             </div>
 
-            <div
-                id="chart-section"
-                className="chart-container"
-                style={{ display: Object.keys(statistics).length ? "block" : "none" }}
-            >
+            <div className="mt-5">
                 <h3>Visit Distribution Chart</h3>
-                <canvas id="visit-chart"></canvas>
+                <Bar
+                    data={chartData}
+                    options={{
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "top",
+                            },
+                            title: {
+                                display: true,
+                                text: "Distribution of Visits by Country",
+                            },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    }}
+                />
+            </div>
+
+            <div id="statistics-section" className="statistics-table mt-5">
+                <h3>Visit Statistics Map</h3>
+                <ChoroplethMap statistics={statistics} />
             </div>
         </div>
     );
