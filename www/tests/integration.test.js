@@ -7,7 +7,7 @@ describe("Integration Tests", () => {
         const initialResponse = await axios.get(`${baseUrl}/statistics`);
         const initialCount = initialResponse.data["us"] || 0;
 
-        const updateResponse = await axios.post(`${baseUrl}/update-statistics`, { countryCode: "us" });
+        const updateResponse = await axios.post(`${baseUrl}/statistics`, { countryCode: "us" });
         expect(updateResponse.status).toBe(200);
         expect(updateResponse.data).toContain("Statistics updated for US");
 
@@ -22,9 +22,9 @@ describe("Integration Tests", () => {
         const initialResponse = await axios.get(`${baseUrl}/statistics`);
         const initialCount = initialResponse.data["ua"] || 0;
 
-        await axios.post(`${baseUrl}/update-statistics`, { countryCode: "ua" });
-        await axios.post(`${baseUrl}/update-statistics`, { countryCode: "ua" });
-        await axios.post(`${baseUrl}/update-statistics`, { countryCode: "ua" });
+        await axios.post(`${baseUrl}/statistics`, { countryCode: "ua" });
+        await axios.post(`${baseUrl}/statistics`, { countryCode: "ua" });
+        await axios.post(`${baseUrl}/statistics`, { countryCode: "ua" });
 
         const updatedResponse = await axios.get(`${baseUrl}/statistics`);
         expect(updatedResponse.status).toBe(200);

@@ -13,7 +13,7 @@ describe("API Tests", () => {
         const initialResponse = await axios.get(`${baseUrl}/statistics`);
         const initialCount = initialResponse.data["us"] || 0;
 
-        const updateResponse = await axios.post(`${baseUrl}/update-statistics`, {
+        const updateResponse = await axios.post(`${baseUrl}/statistics`, {
             countryCode: "us",
         });
 
@@ -25,7 +25,7 @@ describe("API Tests", () => {
 
     it("should return an error for invalid country code", async () => {
         try {
-            await axios.post(`${baseUrl}/update-statistics`, {
+            await axios.post(`${baseUrl}/statistics`, {
                 countryCode: "invalid",
             });
         } catch (error) {

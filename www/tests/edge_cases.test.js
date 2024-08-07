@@ -5,7 +5,7 @@ describe("Edge Case Tests", () => {
 
     it("should return an error when no country code is provided", async () => {
         try {
-            await axios.post(`${baseUrl}/update-statistics`, {});
+            await axios.post(`${baseUrl}/statistics`, {});
         } catch (error) {
             expect(error.response.status).toBe(400);
             expect(error.response.data).toBe("Country code is required.");
@@ -14,7 +14,7 @@ describe("Edge Case Tests", () => {
 
     it("should return an error for an invalid country code", async () => {
         try {
-            await axios.post(`${baseUrl}/update-statistics`, { countryCode: "invalidCode" });
+            await axios.post(`${baseUrl}/statistics`, { countryCode: "invalidCode" });
         } catch (error) {
             expect(error.response.status).toBe(400);
             expect(error.response.data).toBe("Invalid country code");

@@ -36,7 +36,7 @@ export default function Home() {
 
     const handleUpdateStatistics = async () => {
         try {
-            const response = await axios.post("http://localhost:3000/update-statistics", {
+            const response = await axios.post("http://localhost:3000/statistics", {
                 countryCode,
             });
             setFeedback(`Statistics updated for ${countryCode.toUpperCase()}.`);

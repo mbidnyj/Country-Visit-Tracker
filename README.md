@@ -54,7 +54,7 @@ Ensure you have the following installed:
 
 ### **1. Update Visit Statistics**
 
--   **Endpoint**: `/update-statistics`
+-   **Endpoint**: `/statistics`
 -   **Method**: `POST`
 -   **Request Body**: `{ "countryCode": "us" }`
 -   **Response**: `200 OK`

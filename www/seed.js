@@ -1,19 +1,8 @@
-const redis = require("redis");
-
-const redisHost = process.env.REDIS_HOST || "localhost";
-const redisPort = process.env.REDIS_PORT || "6379";
-
-// Create a Redis client
-const redisClient = redis.createClient({
-    url: `redis://${redisHost}:${redisPort}`,
-});
-
-redisClient.connect().catch(console.error);
+const { redisClient } = require("./redisClient");
 
 redisClient.on("ready", async () => {
     console.log("Connected to Redis");
 
-    // Add some sample data with different visit counts
     await redisClient.incrBy("us", 1200);
     await redisClient.incrBy("ua", 450);
     await redisClient.incrBy("it", 300);

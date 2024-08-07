@@ -1,26 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const redis = require("redis");
+const { getStatistics, incrementStatistics } = require("./redisClient");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const redisHost = process.env.REDIS_HOST || "localhost";
-const redisPort = process.env.REDIS_PORT || "6379";
-
-const redisClient = redis.createClient({
-    url: `redis://${redisHost}:${redisPort}`,
-});
-
-redisClient.connect().catch(console.error);
-
-redisClient.on("error", (err) => {
-    console.error("Redis error:", err);
-});
-
-redisClient.on("ready", () => {
-    console.log("Connected to Redis");
-});
 
 // Middleware
 app.use(bodyParser.json());
@@ -31,39 +15,24 @@ app.get("/", (req, res) => {
     res.send("Country Visit Statistics Tracker API");
 });
 
-app.post("/update-statistics", async (req, res) => {
+app.post("/statistics", async (req, res) => {
     const { countryCode } = req.body;
-
-    if (!countryCode) {
-        return res.status(400).send("Country code is required.");
-    }
-
     try {
-        await redisClient.incr(countryCode);
+        await incrementStatistics(countryCode);
         res.status(200).send(`Statistics updated for ${countryCode.toUpperCase()}.`);
-    } catch (err) {
-        console.error("Redis error:", err);
+    } catch (error) {
+        console.error("Error updating statistics:", error);
         res.status(500).send("Error updating statistics.");
     }
 });
 
 app.get("/statistics", async (req, res) => {
     try {
-        const keys = await redisClient.keys("*");
-        if (keys.length === 0) {
-            return res.status(200).json({});
-        }
-
-        const values = await redisClient.mGet(keys);
-        const statistics = {};
-        keys.forEach((key, index) => {
-            statistics[key] = parseInt(values[index], 10);
-        });
-
-        res.status(200).json(statistics);
-    } catch (err) {
-        console.error("Redis error:", err);
-        res.status(500).send("Error retrieving statistics.");
+        const stats = await getStatistics();
+        res.status(200).json(stats);
+    } catch (error) {
+        console.error("Error fetching statistics:", error);
+        res.status(500).send("Error fetching statistics.");
     }
 });
 
