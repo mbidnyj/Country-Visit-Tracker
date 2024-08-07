@@ -1,7 +1,13 @@
-const { redisClient, init } = require("./redisClient");
+const { init, quit } = require("./redisClient");
 
-const seedData = async () => {
+async function seedData() {
     try {
+        const redisClient = await init();
+
+        if (!redisClient || !redisClient.isOpen) {
+            throw new Error("Redis client is not initialized or not connected");
+        }
+
         await redisClient.incrBy("us", 1200);
         await redisClient.incrBy("ua", 450);
         await redisClient.incrBy("it", 300);
@@ -12,21 +18,21 @@ const seedData = async () => {
         await redisClient.incrBy("br", 5);
         await redisClient.incrBy("au", 0);
 
-        console.log("Data has been seeded");
-    } catch (err) {
-        console.error("Error seeding data:", err);
-    } finally {
-        redisClient.quit();
-    }
-};
+        console.log("Data has been seeded successfully.");
 
-const main = async () => {
-    try {
-        await init();
-        await seedData();
-    } catch (err) {
-        console.error("Failed to initialize Redis and seed data:", err);
+        await quit();
+    } catch (error) {
+        console.error("Error seeding data:", error);
+        throw error;
     }
-};
+}
+
+async function main() {
+    try {
+        await seedData();
+    } catch (error) {
+        console.error("Failed to initialize Redis and seed data:", error);
+    }
+}
 
 main();

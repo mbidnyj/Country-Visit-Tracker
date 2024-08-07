@@ -18,6 +18,9 @@ const main = async () => {
 
     app.post("/statistics", async (req, res) => {
         const { countryCode } = req.body;
+        if (!countryCode) {
+            return res.status(400).send("Country code is required.");
+        }
         try {
             await redis.incrementStatistics(countryCode);
             res.status(200).send(`Statistics updated for ${countryCode.toUpperCase()}.`);
