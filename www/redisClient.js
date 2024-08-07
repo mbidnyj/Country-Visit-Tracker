@@ -3,20 +3,32 @@ const redis = require("redis");
 const redisHost = process.env.REDIS_HOST || "localhost";
 const redisPort = process.env.REDIS_PORT || "6379";
 
-// Create a Redis client
-const redisClient = redis.createClient({
-    url: `redis://${redisHost}:${redisPort}`,
-});
+let redisClient;
 
-redisClient.connect().catch(console.error);
+// Initialize Redis connection
+const init = async () => {
+    redisClient = redis.createClient({
+        url: `redis://${redisHost}:${redisPort}`,
+    });
 
-redisClient.on("ready", () => {
-    console.log(`Connected to Redis at ${redisHost}:${redisPort}`);
-});
+    return new Promise((resolve, reject) => {
+        redisClient
+            .connect()
+            .then(() => {
+                console.log(`Connected to Redis at ${redisHost}:${redisPort}`);
+                resolve();
+            })
+            .catch((err) => {
+                console.error("Redis connection error:", err);
+                reject(err);
+            });
 
-redisClient.on("error", (err) => {
-    console.error("Redis error:", err);
-});
+        redisClient.on("error", (err) => {
+            console.error("Redis error:", err);
+            reject(err);
+        });
+    });
+};
 
 // Method to get statistics from Redis
 const getStatistics = async () => {
@@ -37,6 +49,7 @@ const incrementStatistics = async (countryCode) => {
 };
 
 module.exports = {
+    init,
     getStatistics,
     incrementStatistics,
     redisClient,

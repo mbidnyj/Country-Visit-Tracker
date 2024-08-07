@@ -1,9 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { getStatistics, incrementStatistics } = require("./redisClient");
+const redis = require("./redisClient");
 
-const main = () => {
+const main = async () => {
     const app = express();
     const port = process.env.PORT || 3000;
 
@@ -19,7 +19,7 @@ const main = () => {
     app.post("/statistics", async (req, res) => {
         const { countryCode } = req.body;
         try {
-            await incrementStatistics(countryCode);
+            await redis.incrementStatistics(countryCode);
             res.status(200).send(`Statistics updated for ${countryCode.toUpperCase()}.`);
         } catch (error) {
             console.error("Error updating statistics:", error);
@@ -29,7 +29,7 @@ const main = () => {
 
     app.get("/statistics", async (req, res) => {
         try {
-            const stats = await getStatistics();
+            const stats = await redis.getStatistics();
             res.status(200).json(stats);
         } catch (error) {
             console.error("Error fetching statistics:", error);
@@ -37,10 +37,14 @@ const main = () => {
         }
     });
 
+    await redis.init();
+
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
 };
 
-// Start the server
-main();
+// Call the main function to start the server
+main().catch((err) => {
+    console.error("Failed to start the server:", err);
+});
