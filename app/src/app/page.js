@@ -100,26 +100,13 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* Visit Statistics Map */}
             <div id="statistics-section" className="statistics-table mt-5">
-                <h3>Visit Statistics</h3>
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Country Code</th>
-                            <th scope="col">Visit Count</th>
-                        </tr>
-                    </thead>
-                    <tbody id="statistics-table-body">
-                        {Object.entries(statistics).map(([country, count]) => (
-                            <tr key={country}>
-                                <td>{country.toUpperCase()}</td>
-                                <td>{count}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <h3>Visit Statistics Map</h3>
+                <ChoroplethMap statistics={statistics} />
             </div>
 
+            {/* Visit Distribution Chart */}
             <div className="mt-5">
                 <h3>Visit Distribution Chart</h3>
                 <Bar
@@ -144,9 +131,25 @@ export default function Home() {
                 />
             </div>
 
+            {/* Visit Statistics */}
             <div id="statistics-section" className="statistics-table mt-5">
-                <h3>Visit Statistics Map</h3>
-                <ChoroplethMap statistics={statistics} />
+                <h3>Visit Statistics</h3>
+                <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Country Code</th>
+                            <th scope="col">Visit Count</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statistics-table-body">
+                        {Object.entries(statistics).map(([country, count]) => (
+                            <tr key={country}>
+                                <td>{country.toUpperCase()}</td>
+                                <td>{count}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
