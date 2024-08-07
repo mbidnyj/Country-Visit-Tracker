@@ -6,12 +6,15 @@ import { countryCodeToName } from "./countryCodeToName";
 
 export default function ChoroplethMap({ statistics }) {
     const [geoData, setGeoData] = useState(null);
+    const [maxVisits, setMaxVisits] = useState(0);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
                 .then((response) => response.json())
                 .then((data) => {
+                    let maxVisitsTemp = 0;
+
                     data.features.forEach((feature) => {
                         const countryName = feature.properties.name;
 
@@ -22,8 +25,14 @@ export default function ChoroplethMap({ statistics }) {
                         const visits = countryCode && statistics[countryCode] ? statistics[countryCode] : 0;
 
                         feature.properties.visits = visits;
+
+                        // Track the maximum visits
+                        if (visits > maxVisitsTemp) {
+                            maxVisitsTemp = visits;
+                        }
                     });
 
+                    setMaxVisits(maxVisitsTemp);
                     setGeoData(data);
                     console.log("GeoData after mapping visits:", data);
                 })
@@ -32,13 +41,16 @@ export default function ChoroplethMap({ statistics }) {
     }, [statistics]);
 
     const getColor = (visits) => {
-        if (visits > 500) return "#800026";
-        if (visits > 200) return "#BD0026";
-        if (visits > 100) return "#E31A1C";
-        if (visits > 50) return "#FC4E2A";
-        if (visits > 20) return "#FD8D3C";
-        if (visits > 10) return "#FEB24C";
-        if (visits > 0) return "#FED976";
+        if (maxVisits === 0) return "#FFEDA0";
+        const ratio = visits / maxVisits;
+
+        if (ratio > 0.9) return "#800026";
+        if (ratio > 0.7) return "#BD0026";
+        if (ratio > 0.5) return "#E31A1C";
+        if (ratio > 0.3) return "#FC4E2A";
+        if (ratio > 0.2) return "#FD8D3C";
+        if (ratio > 0.1) return "#FEB24C";
+        if (ratio > 0) return "#FED976";
         return "#FFEDA0";
     };
 
