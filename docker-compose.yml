@@ -11,6 +11,7 @@ services:
         environment:
             REDIS_HOST: redis
             REDIS_PORT: 6379
+            REDIS_DB: 0
         command: >
             sh -c "
             node seed.js &&
@@ -39,4 +40,5 @@ services:
         environment:
             REDIS_HOST: redis
             REDIS_PORT: 6379
+            REDIS_DB: 1
         command: npm test

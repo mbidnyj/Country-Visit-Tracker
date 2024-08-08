@@ -2,6 +2,7 @@ const redis = require("redis");
 
 const redisHost = process.env.REDIS_HOST || "localhost";
 const redisPort = process.env.REDIS_PORT || "6379";
+const redisDb = process.env.REDIS_DB || "0";
 
 let redisClient;
 let isInitialized = false;
@@ -13,12 +14,12 @@ const init = async () => {
     }
 
     redisClient = redis.createClient({
-        url: `redis://${redisHost}:${redisPort}`,
+        url: `redis://${redisHost}:${redisPort}/${redisDb}`,
     });
 
     try {
         await redisClient.connect();
-        console.log(`Connected to Redis at ${redisHost}:${redisPort}`);
+        console.log(`Connected to Redis at ${redisHost}:${redisPort}, DB: ${redisDb}`);
         isInitialized = true;
         return redisClient;
     } catch (err) {
