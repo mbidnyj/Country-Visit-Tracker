@@ -65,13 +65,13 @@ Ensure you have the following installed:
 -   **Method**: `GET`
 -   **Response**: `200 OK` with a JSON object containing country codes and visit counts.
 
-### Testing
+## **Testing**
 
 Tests are automatically run as part of the Docker Compose process.
 
-#### To Run Tests:
+### **To Run Tests:**
 
-1. Build and Start All Services:
+1. **Build and Start All Services:**
 
     ```bash
     docker-compose up --build
@@ -79,11 +79,11 @@ Tests are automatically run as part of the Docker Compose process.
 
     This command will automatically run all tests after the services are up.
 
-2. View Test Results:
+2. **View Test Results:**
 
     Monitor the Docker Compose logs to see the test results.
 
-3. Clean Up:
+3. **Clean Up:**
 
     ```bash
     docker-compose down
